@@ -22,17 +22,21 @@ func (t *Token) parseVal(data []rune, posit int) int {
 	counter := posit
 
 	for i := posit + 1; i < size; i++ {
-		if string(data[i]) != "," {
-			//fmt.Println(string(data[i]))
-			holder += string(data[i])
+		//fmt.Println(string(data[i]))
+		if string(data[i]) == "[" || string(data[i]) == "{" {
+			i++
 		} else if string(data[i]) == "," {
 			break
+		} else if string(data[i]) != "," || string(data[i]) != "[" || string(data[i]) != "{" {
+			//fmt.Println(string(data[i]))
+			holder += string(data[i])
 		}
+
 		posit++
 		counter = posit
 	}
 	t.Value = holder
-	fmt.Println(t.Value)
+	fmt.Println("The value is: " + t.Value)
 	return counter
 }
 
@@ -43,7 +47,9 @@ func (t *Token) parseKey(data []rune, posit int) int {
 	counter := posit
 
 	for i := posit + 1; i < size; i++ {
-		if string(data[i]) != ":" {
+		if string(data[i]) == "[" || string(data[i]) == "{" {
+			i++
+		} else if string(data[i]) != ":" {
 			holder += string(data[i])
 		} else if string(data[i]) == ":" {
 			break
@@ -52,7 +58,7 @@ func (t *Token) parseKey(data []rune, posit int) int {
 		counter = posit
 	}
 	t.Key = holder
-	fmt.Println(t.Key)
+	fmt.Println("The Key is: " + t.Key)
 	return counter
 }
 
@@ -95,25 +101,28 @@ func GetKeyVals(data string) {
 		case "}":
 			holder = ""
 			//if this is the case we should expect either a , or the end of file
-			fmt.Println("d")
+			//fmt.Println("d")
 		case "[":
 			holder = ""
 			//if this is the case we should expect a " to start some values seperated by comma
 			//or { which should start parsing like the {
-			fmt.Println("d")
+			//fmt.Println("d")
 		case "]":
 			holder = ""
 			//this should be followed by a , and end an array.
-			fmt.Println("d")
+			//fmt.Println("d")
 		case "\"":
 			holder = ""
 			//this should be the start and end of all keys and values
 			//we should expect a KEY or VALUE
-			fmt.Println("d")
+			//fmt.Println("d")
 		case ",":
+			//comma should in MOST cases be followed by a key
+			i = token.parseKey(chars, i)
+			tokens.Tokens = append(tokens.Tokens, token)
 			holder = ""
 			//this seperates our key valu pairs. It can be followed by a " or { or [
-			fmt.Println("d")
+			//fmt.Println("d")
 		case ":":
 			i = token.parseVal(chars, i)
 			tokens.Tokens = append(tokens.Tokens, token)
@@ -121,7 +130,7 @@ func GetKeyVals(data string) {
 			//this should tell us we've ended a KEY and are starting a value
 			//we will in a value here
 			//this should be followed by either a " or a [
-			fmt.Println("d")
+			//fmt.Println("d")
 		default:
 			fmt.Println("DICKS")
 
