@@ -15,24 +15,44 @@ type Token struct {
 	Value string
 }
 
-func parseVal() {
+func (t *Token) parseVal(data []rune, posit int) int {
 
-}
-
-func (t *Token) parseKey(data string, posit int) int {
-	chars := []rune(data)
 	var holder string
-	size := len(chars)
+	size := len(data)
 	counter := posit
 
-	for i := 0; i < size; i++ {
-		if string(chars[i]) != ":" {
-			holder += string(chars[i])
+	for i := posit + 1; i < size; i++ {
+		if string(data[i]) != "," {
+			//fmt.Println(string(data[i]))
+			holder += string(data[i])
+		} else if string(data[i]) == "," {
+			break
+		}
+		posit++
+		counter = posit
+	}
+	t.Value = holder
+	fmt.Println(t.Value)
+	return counter
+}
+
+func (t *Token) parseKey(data []rune, posit int) int {
+
+	var holder string
+	size := len(data)
+	counter := posit
+
+	for i := posit + 1; i < size; i++ {
+		if string(data[i]) != ":" {
+			holder += string(data[i])
+		} else if string(data[i]) == ":" {
+			break
 		}
 		posit++
 		counter = posit
 	}
 	t.Key = holder
+	fmt.Println(t.Key)
 	return counter
 }
 
@@ -62,11 +82,13 @@ func GetKeyVals(data string) {
 	reserved_chars[":"] = ":"
 	//data = "{\"$implementationId\":\"deviceConfiguration--hardenedUncPathEnabled\",\"hardenedUncPaths\":[{\"serverPath\":\"\\\\\\\\*\\\\SYSVOL\",\"securityFlags\":[\"requireMutualAuthentication\",\"requireIntegrity\"]},{\"serverPath\":\"\\\\\\\\*\\\\NETLOGON\",\"securityFlags\":[\"requireMutualAuthentication\",\"requireIntegrity\"]}]}"
 	for i := 0; i < size; i++ {
-		fmt.Println(string(chars[i]))
+		//fmt.Println(string(chars[i]))
 		//build a token and compare
 		holder += string(chars[i])
 		switch holder {
 		case "{":
+			i = token.parseKey(chars, i)
+			tokens.Tokens = append(tokens.Tokens, token)
 			holder = ""
 			//if this is the case we should expect a " next and a KEY
 			fmt.Println("d")
@@ -93,14 +115,14 @@ func GetKeyVals(data string) {
 			//this seperates our key valu pairs. It can be followed by a " or { or [
 			fmt.Println("d")
 		case ":":
+			i = token.parseVal(chars, i)
+			tokens.Tokens = append(tokens.Tokens, token)
 			holder = ""
 			//this should tell us we've ended a KEY and are starting a value
 			//we will in a value here
 			//this should be followed by either a " or a [
 			fmt.Println("d")
 		default:
-			i = token.parseKey(holder, i)
-			tokens.Tokens = append(tokens.Tokens, token)
 			fmt.Println("DICKS")
 
 		}
