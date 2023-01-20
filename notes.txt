@@ -1,0 +1,38 @@
+"{
+\"$implementationId\":\"deviceConfiguration--hardenedUncPathEnabled\",
+\"hardenedUncPaths\":
+[
+{
+\"serverPath\":\"\\\\\\\\*\\\\SYSVOL\",
+\"securityFlags\":
+[
+\"requireMutualAuthentication\",\"requireIntegrity\"
+]
+},
+{
+\"serverPath\":\"\\\\\\\\*\\\\NETLOGON\",
+\"securityFlags\":
+[
+\"requireMutualAuthentication\",\"requireIntegrity\"
+]
+}
+]
+}"
+
+Rule 1 All JSON must start with {
+Rule 2 All JSON must end with }
+Rule 3 All { must be followed with "
+Rule 4 A combination of {" leads into a KEY
+Rule 5 This key must have a " at the end of the KEY name
+Rule 6 KEY is seperated from the VALUE by a :
+Rule 7 immediately after : we can have the following possiblities
+    1. " will start a value and like KEY will run up to the ending ". This will be immediately followed by a ,
+    2. [ which will contain possibly more JSON or if not additional JSON two values
+Rule 8 a valid KEY VALUE pair will always be followed by a ,
+Rule 9 All [ must have a closing ]
+Rule 10 All { must have a closing }
+Rule 11 All " must have a closing "
+
+The following are the reserved characters of JSON
+
+{ } [ ] , " :
