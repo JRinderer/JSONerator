@@ -62,6 +62,21 @@ func (t *Token) parseKey(data []rune, posit int) int {
 	return counter
 }
 
+func nextChar(data []rune, curnt_posit int) int {
+	//if the next char is a reserved char
+	var next_car string
+	var return_posit int
+
+	return_posit = curnt_posit
+
+	next_car = string(data[curnt_posit+1])
+
+	if next_car == "{" {
+		return_posit = curnt_posit + 2
+	}
+	return return_posit
+}
+
 func GetKeyVals(data string) {
 	//var key string
 	//var val string
@@ -77,42 +92,37 @@ func GetKeyVals(data string) {
 
 	size := len(chars)
 
-	reserved_chars := make(map[string]string)
 	//reserved_chars := [7]string {"{","}","[","]","\"", ",",":"}
-	reserved_chars["{"] = "{"
-	reserved_chars["}"] = "}"
-	reserved_chars["["] = "["
-	reserved_chars["]"] = "]"
-	reserved_chars["\""] = "\""
-	reserved_chars[","] = ","
-	reserved_chars[":"] = ":"
 	//data = "{\"$implementationId\":\"deviceConfiguration--hardenedUncPathEnabled\",\"hardenedUncPaths\":[{\"serverPath\":\"\\\\\\\\*\\\\SYSVOL\",\"securityFlags\":[\"requireMutualAuthentication\",\"requireIntegrity\"]},{\"serverPath\":\"\\\\\\\\*\\\\NETLOGON\",\"securityFlags\":[\"requireMutualAuthentication\",\"requireIntegrity\"]}]}"
 	for i := 0; i < size; i++ {
 		//fmt.Println(string(chars[i]))
 		//build a token and compare
 		holder += string(chars[i])
+		fmt.Println(holder)
 		switch holder {
 		case "{":
 			i = token.parseKey(chars, i)
 			tokens.Tokens = append(tokens.Tokens, token)
 			holder = ""
 			//if this is the case we should expect a " next and a KEY
-			fmt.Println("d")
+			//fmt.Println("d")
 		case "}":
-			holder = ""
+
 			//if this is the case we should expect either a , or the end of file
 			//fmt.Println("d")
 		case "[":
-			holder = ""
+			//check to see if the next char is a { or the start of a string
+			i = nextChar(chars, i)
+			//holder = ""
 			//if this is the case we should expect a " to start some values seperated by comma
 			//or { which should start parsing like the {
 			//fmt.Println("d")
 		case "]":
-			holder = ""
+
 			//this should be followed by a , and end an array.
 			//fmt.Println("d")
 		case "\"":
-			holder = ""
+			
 			//this should be the start and end of all keys and values
 			//we should expect a KEY or VALUE
 			//fmt.Println("d")
