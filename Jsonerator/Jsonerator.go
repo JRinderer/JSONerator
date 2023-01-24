@@ -4,10 +4,17 @@
 
 package Jsonerator
 
-import "fmt"
+import (
+	"fmt"
+	"unicode"
+)
 
 func (l *Lexer) peekChar(data []rune, posit int) string {
 	return string(data[posit+1])
+}
+
+func (l *Lexer) peekRune(data []rune, posit int) rune {
+	return data[posit+1]
 }
 
 func (l *Lexer) parseKeys(data []rune, posit int, t *Token) {
@@ -59,7 +66,7 @@ func (l *Lexer) parseVals(data []rune, posit int, t *Token) {
 	for i := posit + 1; i < size; i++ {
 		//if the previous value is a key, then we know we're not in an array
 		//need to check that the comma is outside an array
-		if string(data[i]) != "," {
+		if string(data[i]) != "," && string(data[i]) != "}" {
 			holder += string(data[i])
 		} else {
 			break
@@ -95,6 +102,12 @@ func GetKeyVals(data string) Tokens {
 		} else if str == ":" && lex.peekChar(chars, i) == "\"" && lex.State == "value" {
 			lex.parseVals(chars, i, &tok)
 			i = lex.Posit
+		} else if str == ":" && unicode.IsLetter((lex.peekRune(chars, i))) && lex.State == "value" {
+			lex.parseVals(chars, i, &tok)
+			i = lex.Posit
+		} else if str == ":" && unicode.IsNumber((lex.peekRune(chars, i))) && lex.State == "value" {
+			lex.parseVals(chars, i, &tok)
+			i = lex.Posit
 		} else if str == ":" && lex.peekChar(chars, i) == "[" && lex.peekChar(chars, i+1) == "{" && lex.State == "key" {
 			lex.parseVals(chars, i, &tok)
 			i = lex.Posit
@@ -108,7 +121,6 @@ func GetKeyVals(data string) Tokens {
 			lex.parseKeys(chars, i, &tok)
 			i = lex.Posit
 		}
-
 	}
 
 	return toks
