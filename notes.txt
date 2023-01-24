@@ -1,3 +1,22 @@
+Every { starts JSON and should be followed by a " which will be a key. We should immediately parse this key
+
+Our lexer should return an integer back to the original function once the key has been parse.
+
+It should encounter a : which indicates the start of a value.
+
+We should then parse the key similar to how we parse the key.
+
+We'll parse up to a , which indicates the end of a value.
+
+A comma will not ALWAYS be the start of a new JSON key value pair.
+
+Inside of a [ that isn't an array of JSON it's just values. This means
+if we have [ that is followed by a " or some number or bool, we're in an array of values. This means we are parsing vals
+
+
+
+
+
 "{
 \"$implementationId\":\"deviceConfiguration--hardenedUncPathEnabled\",
 \"hardenedUncPaths\":
