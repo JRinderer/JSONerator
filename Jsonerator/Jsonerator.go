@@ -81,6 +81,7 @@ func (l *Lexer) parseVals(data []rune, posit int, t *Token) {
 	fmt.Println("The Value is: " + t.Value)
 }
 
+
 func GetKeyVals(data string) Tokens {
 	var toks Tokens
 	var tok Token
@@ -93,6 +94,7 @@ func GetKeyVals(data string) Tokens {
 	//reserved_chars := [7]string {"{","}","[","]","\"", ",",":"}
 	//data = "{\"$implementationId\":\"deviceConfiguration--hardenedUncPathEnabled\",\"hardenedUncPaths\":[{\"serverPath\":\"\\\\\\\\*\\\\SYSVOL\",\"securityFlags\":[\"requireMutualAuthentication\",\"requireIntegrity\"]},{\"serverPath\":\"\\\\\\\\*\\\\NETLOGON\",\"securityFlags\":[\"requireMutualAuthentication\",\"requireIntegrity\"]}]}"
 	for i := 0; i < size; i++ {
+
 		//first char will always be { and will always start with a key
 		str := string(chars[i])
 		if str == "{" { //we know this is a key
