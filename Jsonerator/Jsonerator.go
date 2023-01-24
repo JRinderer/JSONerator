@@ -30,6 +30,28 @@ func (l *Lexer) parseKeys(data []rune, posit int, t *Token) {
 	fmt.Println("The Key is: " + t.Key)
 }
 
+func (l *Lexer) parseArrayVals(data []rune, posit int, t *Token) {
+	var holder string
+	size := len(data)
+
+	for i := posit + 1; i < size; i++ {
+		//if the previous value is a key, then we know we're not in an array
+		//need to check that the comma is outside an array
+		if string(data[i]) != "]" {
+			holder += string(data[i])
+		} else {
+			break
+		}
+		posit++
+	}
+	t.Value = holder
+	//this will change based on how the value end!
+	l.State = "key"
+	l.PrevState = "value"
+	l.Posit = posit
+	fmt.Println("The Value is: " + t.Value)
+}
+
 func (l *Lexer) parseVals(data []rune, posit int, t *Token) {
 	var holder string
 	size := len(data)
@@ -80,7 +102,7 @@ func GetKeyVals(data string) Tokens {
 			lex.parseKeys(chars, i+1, &tok)
 			i = lex.Posit
 		} else if str == "[" && lex.peekChar(chars, i) == "\"" && lex.PrevState == "key" {
-			lex.parseVals(chars, i, &tok)
+			lex.parseArrayVals(chars, i, &tok)
 			i = lex.Posit
 		} else if str == "," && lex.peekChar(chars, i) == "\"" && lex.PrevState == "value" {
 			lex.parseKeys(chars, i, &tok)
