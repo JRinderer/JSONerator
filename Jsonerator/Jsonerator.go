@@ -4,89 +4,88 @@
 
 package Jsonerator
 
-import "fmt"
+import (
+	"fmt"
+	"unicode"
+)
 
-type Tokens struct {
-	Tokens []Token
+func (l *Lexer) peekChar(data []rune, posit int) string {
+	return string(data[posit+1])
 }
 
-type Token struct {
-	Key   string
-	Value string
+func (l *Lexer) peekRune(data []rune, posit int) rune {
+	return data[posit+1]
 }
 
-func (t *Token) parseVal(data []rune, posit int) int {
-
+func (l *Lexer) parseKeys(data []rune, posit int, t *Token) {
 	var holder string
 	size := len(data)
-	counter := posit
 
 	for i := posit + 1; i < size; i++ {
-		//fmt.Println(string(data[i]))
-		if string(data[i]) == "[" || string(data[i]) == "{" {
-			i++
-		} else if string(data[i]) == "," {
-			break
-		} else if string(data[i]) != "," || string(data[i]) != "[" || string(data[i]) != "{" {
-			//fmt.Println(string(data[i]))
-			holder += string(data[i])
-		}
-
-		posit++
-		counter = posit
-	}
-	t.Value = holder
-	fmt.Println("The value is: " + t.Value)
-	return counter
-}
-
-func (t *Token) parseKey(data []rune, posit int) int {
-
-	var holder string
-	size := len(data)
-	counter := posit
-
-	for i := posit + 1; i < size; i++ {
-		if string(data[i]) == "[" || string(data[i]) == "{" {
-			i++
-		} else if string(data[i]) != ":" {
+		if string(data[i]) != ":" {
 			holder += string(data[i])
 		} else if string(data[i]) == ":" {
 			break
 		}
 		posit++
-		counter = posit
 	}
 	t.Key = holder
+	//we know after we parse a key we must be in a value
+	l.PrevState = "key"
+	l.State = "value"
+	l.Posit = posit
 	fmt.Println("The Key is: " + t.Key)
-	return counter
 }
 
-func nextChar(data []rune, curnt_posit int) int {
-	//if the next char is a reserved char
-	var next_car string
-	var return_posit int
-
-	return_posit = curnt_posit
-
-	next_car = string(data[curnt_posit+1])
-
-	if next_car == "{" {
-		return_posit = curnt_posit + 2
-	}
-	return return_posit
-}
-
-func GetKeyVals(data string) {
-	//var key string
-	//var val string
-	//var inKey bool
-	//var inVal bool
+func (l *Lexer) parseArrayVals(data []rune, posit int, t *Token) {
 	var holder string
-	var tokens Tokens
-	var token Token
-	var counter int
-	counter = 0
+	size := len(data)
+
+	for i := posit + 1; i < size; i++ {
+		//if the previous value is a key, then we know we're not in an array
+		//need to check that the comma is outside an array
+		if string(data[i]) != "]" {
+			holder += string(data[i])
+		} else {
+			break
+		}
+		posit++
+	}
+	t.Value = holder
+	//this will change based on how the value end!
+	l.State = "key"
+	l.PrevState = "value"
+	l.Posit = posit
+	fmt.Println("The Value is: " + t.Value)
+}
+
+func (l *Lexer) parseVals(data []rune, posit int, t *Token) {
+	var holder string
+	size := len(data)
+
+	for i := posit + 1; i < size; i++ {
+		//if the previous value is a key, then we know we're not in an array
+		//need to check that the comma is outside an array
+		if string(data[i]) != "," && string(data[i]) != "}" {
+			holder += string(data[i])
+		} else {
+			break
+		}
+		posit++
+	}
+	t.Value = holder
+	//this will change based on how the value end!
+	l.State = "key"
+	l.PrevState = "value"
+	l.Posit = posit
+	fmt.Println("The Value is: " + t.Value)
+}
+
+
+func GetKeyVals(data string) Tokens {
+	var toks Tokens
+	var tok Token
+	var lex Lexer
 
 	chars := []rune(data)
 
@@ -95,57 +94,36 @@ func GetKeyVals(data string) {
 	//reserved_chars := [7]string {"{","}","[","]","\"", ",",":"}
 	//data = "{\"$implementationId\":\"deviceConfiguration--hardenedUncPathEnabled\",\"hardenedUncPaths\":[{\"serverPath\":\"\\\\\\\\*\\\\SYSVOL\",\"securityFlags\":[\"requireMutualAuthentication\",\"requireIntegrity\"]},{\"serverPath\":\"\\\\\\\\*\\\\NETLOGON\",\"securityFlags\":[\"requireMutualAuthentication\",\"requireIntegrity\"]}]}"
 	for i := 0; i < size; i++ {
-		//fmt.Println(string(chars[i]))
-		//build a token and compare
-		holder += string(chars[i])
-		fmt.Println(holder)
-		switch holder {
-		case "{":
-			i = token.parseKey(chars, i)
-			tokens.Tokens = append(tokens.Tokens, token)
-			holder = ""
-			//if this is the case we should expect a " next and a KEY
-			//fmt.Println("d")
-		case "}":
 
-			//if this is the case we should expect either a , or the end of file
-			//fmt.Println("d")
-		case "[":
-			//check to see if the next char is a { or the start of a string
-			i = nextChar(chars, i)
-			//holder = ""
-			//if this is the case we should expect a " to start some values seperated by comma
-			//or { which should start parsing like the {
-			//fmt.Println("d")
-		case "]":
-
-			//this should be followed by a , and end an array.
-			//fmt.Println("d")
-		case "\"":
-			
-			//this should be the start and end of all keys and values
-			//we should expect a KEY or VALUE
-			//fmt.Println("d")
-		case ",":
-			//comma should in MOST cases be followed by a key
-			i = token.parseKey(chars, i)
-			tokens.Tokens = append(tokens.Tokens, token)
-			holder = ""
-			//this seperates our key valu pairs. It can be followed by a " or { or [
-			//fmt.Println("d")
-		case ":":
-			i = token.parseVal(chars, i)
-			tokens.Tokens = append(tokens.Tokens, token)
-			holder = ""
-			//this should tell us we've ended a KEY and are starting a value
-			//we will in a value here
-			//this should be followed by either a " or a [
-			//fmt.Println("d")
-		default:
-			fmt.Println("DICKS")
-
+		//first char will always be { and will always start with a key
+		str := string(chars[i])
+		if str == "{" { //we know this is a key
+			lex.parseKeys(chars, i, &tok)
+			i = lex.Posit
+			//parsing simple JSON
+		} else if str == ":" && lex.peekChar(chars, i) == "\"" && lex.State == "value" {
+			lex.parseVals(chars, i, &tok)
+			i = lex.Posit
+		} else if str == ":" && unicode.IsLetter((lex.peekRune(chars, i))) && lex.State == "value" {
+			lex.parseVals(chars, i, &tok)
+			i = lex.Posit
+		} else if str == ":" && unicode.IsNumber((lex.peekRune(chars, i))) && lex.State == "value" {
+			lex.parseVals(chars, i, &tok)
+			i = lex.Posit
+		} else if str == ":" && lex.peekChar(chars, i) == "[" && lex.peekChar(chars, i+1) == "{" && lex.State == "key" {
+			lex.parseVals(chars, i, &tok)
+			i = lex.Posit
+		} else if str == "[" && lex.peekChar(chars, i) == "{" && lex.PrevState == "key" {
+			lex.parseKeys(chars, i+1, &tok)
+			i = lex.Posit
+		} else if str == "[" && lex.peekChar(chars, i) == "\"" && lex.PrevState == "key" {
+			lex.parseArrayVals(chars, i, &tok)
+			i = lex.Posit
+		} else if str == "," && lex.peekChar(chars, i) == "\"" && lex.PrevState == "value" {
+			lex.parseKeys(chars, i, &tok)
+			i = lex.Posit
 		}
-		counter++
-
 	}
+
+	return toks
 }
