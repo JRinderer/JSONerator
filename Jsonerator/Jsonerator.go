@@ -103,9 +103,9 @@ func (l *Lexer) parseSubArrayVals(data []rune, posit int, t *Token) {
 }
 
 // used to parse array of JSON
-func (l *Lexer) parseKeysArray(data []rune, posit int, t *Token, ParentKey string) {
+func (l *Lexer) parseKeysArray(data []rune, posit int, t *Token, ParentKey string, toks *Tokens) {
 	var holder string
-	var toks Tokens
+
 	size := len(data)
 	count_of_pars_open := 1
 	count_of_pars_clse := 0
@@ -162,7 +162,7 @@ func (l *Lexer) parseKeysArray(data []rune, posit int, t *Token, ParentKey strin
 		posit++
 	}
 
-	fmt.Println(toks.Tokens)
+	//fmt.Println(toks.Tokens)
 	fmt.Println(holder)
 	//t.Key += holder
 	//we know after we parse a key we must be in a value
@@ -252,27 +252,32 @@ func GetKeyVals(data string) Tokens {
 		} else if str == ":" && lex.peekChar(chars, i) == "\"" && lex.State == "value" {
 			lex.parseVals(chars, i, &tok)
 			i = lex.Posit
-			fmt.Println(tok.Key)
-			fmt.Println(tok.Value)
+			toks.Tokens = append(toks.Tokens, tok)
+			//fmt.Println(tok.Key)
+			//fmt.Println(tok.Value)
 		} else if str == ":" && unicode.IsLetter((lex.peekRune(chars, i))) && lex.State == "value" {
 			lex.parseVals(chars, i, &tok)
 			i = lex.Posit
-			fmt.Println(tok.Key)
-			fmt.Println(tok.Value)
+			toks.Tokens = append(toks.Tokens, tok)
+			//fmt.Println(tok.Key)
+			//fmt.Println(tok.Value)
 		} else if str == ":" && unicode.IsNumber((lex.peekRune(chars, i))) && lex.State == "value" {
 			lex.parseVals(chars, i, &tok)
 			i = lex.Posit
-			fmt.Println(tok.Key)
-			fmt.Println(tok.Value)
+			toks.Tokens = append(toks.Tokens, tok)
+			//fmt.Println(tok.Key)
+			//fmt.Println(tok.Value)
 		} else if str == ":" && lex.peekChar(chars, i) == "[" && lex.peekChar(chars, i+1) == "{" && lex.State == "key" {
 			lex.parseVals(chars, i, &tok)
 			i = lex.Posit
-			fmt.Println(tok.Key)
-			fmt.Println(tok.Value)
+			toks.Tokens = append(toks.Tokens, tok)
+			//fmt.Println(tok.Key)
+			//fmt.Println(tok.Value)
 		} else if str == "[" && lex.peekChar(chars, i) == "{" && lex.PrevState == "key" {
 			//this indicates we're in a new JSON and we need to preserve this top level key.
 			//fmt.Println(tok.Key)
-			lex.parseKeysArray(chars, i+1, &tok, tok.Key)
+			//possibly pass toks array so we can append all necessary data
+			lex.parseKeysArray(chars, i+1, &tok, tok.Key, &toks)
 			//fmt.Println(tok.Value)
 			i = lex.Posit
 			//fmt.Println(tok.Key)
@@ -280,8 +285,9 @@ func GetKeyVals(data string) Tokens {
 		} else if str == "[" && lex.peekChar(chars, i) == "\"" && lex.PrevState == "key" {
 			lex.parseArrayVals(chars, i, &tok)
 			i = lex.Posit
-			fmt.Println(tok.Key)
-			fmt.Println(tok.Value)
+			toks.Tokens = append(toks.Tokens, tok)
+			//fmt.Println(tok.Key)
+			//fmt.Println(tok.Value)
 		} else if str == "," && lex.peekChar(chars, i) == "\"" && lex.PrevState == "value" {
 			lex.parseKeys(chars, i, &tok)
 			i = lex.Posit
@@ -289,6 +295,8 @@ func GetKeyVals(data string) Tokens {
 		}
 
 	}
+
+	fmt.Println(toks.Tokens)
 	//almost got it. Need to look at when tokens are populated
 
 	return toks
