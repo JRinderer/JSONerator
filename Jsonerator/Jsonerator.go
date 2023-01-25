@@ -34,7 +34,27 @@ func (l *Lexer) parseKeys(data []rune, posit int, t *Token) {
 	l.PrevState = "key"
 	l.State = "value"
 	l.Posit = posit
-	//fmt.Println("The Key is: " + t.Key)
+	fmt.Println("The Key is: " + t.Key)
+}
+
+func (l *Lexer) parseKeysArray(data []rune, posit int, t *Token) {
+	var holder string
+	size := len(data)
+
+	for i := posit + 1; i < size; i++ {
+		if string(data[i]) != ":" {
+			holder += string(data[i])
+		} else if string(data[i]) == ":" {
+			break
+		}
+		posit++
+	}
+	t.Key += holder
+	//we know after we parse a key we must be in a value
+	l.PrevState = "key"
+	l.State = "value"
+	l.Posit = posit
+	fmt.Println("The Key is: " + t.Key)
 }
 
 func (l *Lexer) parseArrayVals(data []rune, posit int, t *Token) {
@@ -56,7 +76,7 @@ func (l *Lexer) parseArrayVals(data []rune, posit int, t *Token) {
 	l.State = "key"
 	l.PrevState = "value"
 	l.Posit = posit
-	//fmt.Println("The Value is: " + t.Value)
+	fmt.Println("The Value is: " + t.Value)
 }
 
 func (l *Lexer) parseArrayJson(data []rune, posit int, t *Token) {
@@ -71,7 +91,7 @@ func (l *Lexer) parseArrayJson(data []rune, posit int, t *Token) {
 	l.State = "key"
 	l.PrevState = "value"
 	l.Posit = posit
-	//fmt.Println("The Value is: " + t.Value)
+	fmt.Println("The Value is: " + t.Value)
 }
 
 func (l *Lexer) parseVals(data []rune, posit int, t *Token) {
@@ -93,7 +113,7 @@ func (l *Lexer) parseVals(data []rune, posit int, t *Token) {
 	l.State = "key"
 	l.PrevState = "value"
 	l.Posit = posit
-	//fmt.Println("The Value is: " + t.Value)
+	fmt.Println("The Value is: " + t.Value)
 }
 
 func GetKeyVals(data string) Tokens {
@@ -128,9 +148,9 @@ func GetKeyVals(data string) Tokens {
 			i = lex.Posit
 		} else if str == "[" && lex.peekChar(chars, i) == "{" && lex.PrevState == "key" {
 			//this indicates we're in a new JSON and we need to preserve this top level key.
-			fmt.Println(tok.Key)
-			lex.parseKeys(chars, i+1, &tok)
-			fmt.Println(tok.Value)
+			//fmt.Println(tok.Key)
+			lex.parseKeysArray(chars, i+1, &tok)
+			//fmt.Println(tok.Value)
 			i = lex.Posit
 		} else if str == "[" && lex.peekChar(chars, i) == "\"" && lex.PrevState == "key" {
 			lex.parseArrayVals(chars, i, &tok)
