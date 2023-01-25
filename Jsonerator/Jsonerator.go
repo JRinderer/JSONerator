@@ -59,7 +59,7 @@ func (l *Lexer) BuildKey(data []rune, posit int, tk *Token) {
 	l.Posit = counter
 }
 
-func (l *Lexer) BuildToken(data []rune, posit int, tk *Token) {
+func (l *Lexer) BuildToken(data []rune, posit int, tk *Token, tks *Tokens) {
 	var str_holder string
 	size := len(data)
 
@@ -73,10 +73,12 @@ func (l *Lexer) BuildToken(data []rune, posit int, tk *Token) {
 		if str_holder == "\"" && string(data[i-1]) == "{" {
 			l.BuildKey(data, i, tk)
 			i = l.Posit
-			//this indicates the start of a simple KEY
+			//this indicates the start of a simple value
 		} else if string(data[i-1]) == ":" && str_holder == "\"" {
 			l.BuildValues(data, i, tk)
 			i = l.Posit
+			//we can bulid this token because we have our full KEY and value at this time
+			tks.Tokens = append(tks.Tokens, *tk)
 		}
 	}
 
@@ -96,8 +98,8 @@ func (l *Lexer) ParseJson(data []rune, posit int, tks *Tokens) {
 		str_holder = string((data[i]))
 		//this indicates the start of a key
 		if str_holder == "{" && l.peekChar(data, (i)) == "\"" {
-			l.BuildToken(data, (i + 1), &tok_holder)
-		} else if str_holder == ":" && l.peekChar(data, (i+1)) == "[" {
+			l.BuildToken(data, (i + 1), &tok_holder, tks)
+		} else if str_holder == ":" && l.peekChar(data, (i)) == "[" {
 			l.ParseArray(data, i, tks)
 		}
 
