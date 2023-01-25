@@ -130,21 +130,26 @@ func (l *Lexer) parseKeysArray(data []rune, posit int, t *Token, ParentKey strin
 		} else if str == ":" && l.peekChar(data, i) == "\"" && l.State == "value" {
 			l.parseSubVals(data, i, t)
 			i = l.Posit
+			//fmt.Println(t)
 			toks.Tokens = append(toks.Tokens, *t)
 		} else if str == ":" && unicode.IsLetter((l.peekRune(data, i))) && l.State == "value" {
 			l.parseSubVals(data, i, t)
+			//fmt.Println(t)
 			toks.Tokens = append(toks.Tokens, *t)
 			i = l.Posit
 		} else if str == ":" && unicode.IsNumber((l.peekRune(data, i))) && l.State == "value" {
 			l.parseSubVals(data, i, t)
+			//fmt.Println(t)
 			toks.Tokens = append(toks.Tokens, *t)
 			i = l.Posit
 		} else if str == ":" && l.peekChar(data, i) == "[" && l.peekChar(data, i+1) == "{" && l.State == "key" {
 			l.parseSubVals(data, i, t)
+			//fmt.Println(t)
 			toks.Tokens = append(toks.Tokens, *t)
 			i = l.Posit
 		} else if str == "[" && l.peekChar(data, i) == "\"" && l.PrevState == "key" {
 			l.parseArrayVals(data, i, t)
+			//fmt.Println(t)
 			toks.Tokens = append(toks.Tokens, *t)
 			i = l.Posit
 		} else if str == "," && l.peekChar(data, i) == "\"" && l.PrevState == "value" {
@@ -156,12 +161,13 @@ func (l *Lexer) parseKeysArray(data []rune, posit int, t *Token, ParentKey strin
 		} else if str == "\"" {
 			l.parseSubVals(data, i, t)
 			i = l.Posit
+			//fmt.Println(t)
 			toks.Tokens = append(toks.Tokens, *t)
 		}
 
 		posit++
 	}
-
+	//fmt.Println(toks.Tokens)
 	//fmt.Println(toks.Tokens)
 	fmt.Println(holder)
 	//t.Key += holder
@@ -285,7 +291,7 @@ func GetKeyVals(data string) Tokens {
 		} else if str == "[" && lex.peekChar(chars, i) == "\"" && lex.PrevState == "key" {
 			lex.parseArrayVals(chars, i, &tok)
 			i = lex.Posit
-			toks.Tokens = append(toks.Tokens, tok)
+
 			//fmt.Println(tok.Key)
 			//fmt.Println(tok.Value)
 		} else if str == "," && lex.peekChar(chars, i) == "\"" && lex.PrevState == "value" {
