@@ -18,24 +18,24 @@ if we have [ that is followed by a " or some number or bool, we're in an array o
 
 
 "{
-\"$implementationId\":\"deviceConfiguration--hardenedUncPathEnabled\",
-\"hardenedUncPaths\":
-[
-{
-\"serverPath\":\"\\\\\\\\*\\\\SYSVOL\",
-\"securityFlags\":
-[
-\"requireMutualAuthentication\",\"requireIntegrity\"
-]
-},
-{
-\"serverPath\":\"\\\\\\\\*\\\\NETLOGON\",
-\"securityFlags\":
-[
-\"requireMutualAuthentication\",\"requireIntegrity\"
-]
-}
-]
+    \"$implementationId\":\"deviceConfiguration--hardenedUncPathEnabled\",
+    \"hardenedUncPaths\":
+    [
+        {
+            \"serverPath\":\"\\\\\\\\*\\\\SYSVOL\",
+            \"securityFlags\":
+            [
+                \"requireMutualAuthentication\",\"requireIntegrity\"
+            ]
+        },
+        {
+            \"serverPath\":\"\\\\\\\\*\\\\NETLOGON\",
+            \"securityFlags\":
+            [
+                \"requireMutualAuthentication\",\"requireIntegrity\"
+            ]
+        }
+    ]
 }"
 
 Rule 1 All JSON must start with {
