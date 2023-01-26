@@ -20,23 +20,39 @@ if we have [ that is followed by a " or some number or bool, we're in an array o
 "{
 \"$implementationId\":\"deviceConfiguration--hardenedUncPathEnabled\",
 \"hardenedUncPaths\":
-[
-{
-\"serverPath\":\"\\\\\\\\*\\\\SYSVOL\",
-\"securityFlags\":
-[
-\"requireMutualAuthentication\",\"requireIntegrity\"
-]
-},
-{
-\"serverPath\":\"\\\\\\\\*\\\\NETLOGON\",
-\"securityFlags\":
-[
-\"requireMutualAuthentication\",\"requireIntegrity\"
-]
-}
-]
+    [
+        {
+            \"serverPath\":\"\\\\\\\\*\\\\SYSVOL\",
+            \"securityFlags\":
+                [
+                    \"requireMutualAuthentication\",\"requireIntegrity\"
+                ]
+        },
+        {
+            \"serverPath\":\"\\\\\\\\*\\\\NETLOGON\",
+                \"securityFlags\":
+                    [
+                        \"requireMutualAuthentication\",\"requireIntegrity\"
+                    ]
+        }
+    ]
 }"
+
+[
+{"$implementationId" "deviceConfiguration--hardenedUncPathEnabled" <nil> 0} {"h
+ardenedUncPaths"_serverPath" "\\\\*\\SYSVOL" <nil> 0} {"hardenedUncPaths"_"secur
+ityFlags" "requireMutualAuthentication","requireIntegrity" <nil> 0} {"hardenedUn
+cPaths"_"serverPath" "\\\\*\\NETLOGON" <nil> 0} {"hardenedUncPaths"_"securityFla
+gs" "requireMutualAuthentication","requireIntegrity" <nil> 0} {"hardenedUncPaths
+"_"securityFlags" "requireMutualAuthentication","requireIntegrity" <nil> 0} {"se
+rverPath" "\\\\*\\NETLOGON" <nil> 0} {"securityFlags" "requireMutualAuthenticati
+on","requireIntegrity" <nil> 0}
+]
+
+
+
+hardenedUncPaths_serverPath,SYSVOL - NETLOGIN
+
 
 Rule 1 All JSON must start with {
 Rule 2 All JSON must end with }
