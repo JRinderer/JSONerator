@@ -6,6 +6,7 @@ package Jsonerator
 
 import (
 	"fmt"
+	"strings"
 	"unicode"
 )
 
@@ -73,33 +74,21 @@ func (l *Lexer) parseSubKeys(data []rune, posit int, t *Token, parentKey string)
 		posit++
 	}
 	t.Key = parentKey + "_" + holder
+
+	//replace key stuff
+	if strings.Count(t.Key, "\"") == 3 {
+		t.Key = strings.Replace(t.Key, "\"_", "_", 3)
+	} else {
+		t.Key = strings.Replace(t.Key, "\"_\"", "_", 3)
+	}
+	//
+
+	//fmt.Println(t.Key)
 	//we know after we parse a key we must be in a value
 	l.PrevState = "key"
 	l.State = "value"
 	l.Posit = posit
 	//fmt.Println("The Key is: " + t.Key)
-}
-
-func (l *Lexer) parseSubArrayVals(data []rune, posit int, t *Token) {
-	var holder string
-	size := len(data)
-
-	for i := posit + 1; i < size; i++ {
-		//if the previous value is a key, then we know we're not in an array
-		//need to check that the comma is outside an array
-		if string(data[i]) != "]" {
-			holder += string(data[i])
-		} else {
-			break
-		}
-		posit++
-	}
-	t.Value = holder
-	//this will change based on how the value end!
-	l.State = "key"
-	l.PrevState = "value"
-	l.Posit = posit
-	//fmt.Println("The Value is: " + t.Value)
 }
 
 // used to parse array of JSON
@@ -167,6 +156,7 @@ func (l *Lexer) parseKeysArray(data []rune, posit int, t *Token, ParentKey strin
 
 		posit++
 	}
+	//fmt.Println(l.Posit)
 	//fmt.Println(toks.Tokens)
 	//fmt.Println(toks.Tokens)
 	fmt.Println(holder)
@@ -174,7 +164,7 @@ func (l *Lexer) parseKeysArray(data []rune, posit int, t *Token, ParentKey strin
 	//we know after we parse a key we must be in a value
 	l.PrevState = "key"
 	l.State = "value"
-	l.Posit = posit
+	//l.Posit = posit
 	//fmt.Println("The Key is: " + t.Key)
 }
 
@@ -191,21 +181,6 @@ func (l *Lexer) parseArrayVals(data []rune, posit int, t *Token) {
 			break
 		}
 		posit++
-	}
-	t.Value = holder
-	//this will change based on how the value end!
-	l.State = "key"
-	l.PrevState = "value"
-	l.Posit = posit
-	//fmt.Println("The Value is: " + t.Value)
-}
-
-func (l *Lexer) parseArrayJson(data []rune, posit int, t *Token) {
-	var holder string
-	size := len(data)
-
-	for i := posit + 1; i < size; i++ {
-		//in this scenarior we're going to need the token Key. THe value will be the
 	}
 	t.Value = holder
 	//this will change based on how the value end!
