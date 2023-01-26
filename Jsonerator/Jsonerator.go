@@ -32,6 +32,7 @@ func (l *Lexer) parseKeys(data []rune, posit int, t *Token) {
 		posit++
 	}
 	t.Key = holder
+	t.Key = strings.ReplaceAll(t.Key, "\"", "")
 	//we know after we parse a key we must be in a value
 	l.PrevState = "key"
 	l.State = "value"
@@ -55,6 +56,7 @@ func (l *Lexer) parseSubVals(data []rune, posit int, t *Token) {
 	}
 	t.Value = holder
 	//this will change based on how the value end!
+	t.Value = strings.ReplaceAll(t.Value, "\"", "")
 	l.State = "key"
 	l.PrevState = "value"
 	l.Posit = posit
@@ -82,6 +84,7 @@ func (l *Lexer) parseSubKeys(data []rune, posit int, t *Token, parentKey string)
 	} else {
 		t.Key = strings.Replace(t.Key, "\"_\"", "_", 3)
 	}
+	t.Key = strings.ReplaceAll(t.Key, "\"", "")
 	//
 
 	//fmt.Println(t.Key)
@@ -184,6 +187,7 @@ func (l *Lexer) parseArrayVals(data []rune, posit int, t *Token) {
 		posit++
 	}
 	t.Value = holder
+	t.Value = strings.ReplaceAll(t.Value, "\"", "")
 	//this will change based on how the value end!
 	l.State = "key"
 	l.PrevState = "value"
@@ -206,6 +210,7 @@ func (l *Lexer) parseVals(data []rune, posit int, t *Token) {
 		posit++
 	}
 	t.Value = holder
+	t.Value = strings.ReplaceAll(t.Value, "\"", "")
 	//this will change based on how the value end!
 	l.State = "key"
 	l.PrevState = "value"
