@@ -2,6 +2,7 @@
 = Copyright (c) 2023 John Rinderer. All rights reserved                                                                                                      =
 =============================================================================================================================================================*/
 
+// Jsonerator.GetKeyVals("{\"$implementationId\":\"deviceConfiguration--hardenedUncPathEnabled\",\"hardenedUncPaths\":[{\"serverPath\":\"\\\\\\\\*\\\\SYSVOL\",\"securityFlags\":[\"requireMutualAuthentication\",\"requireIntegrity\"]},{\"serverPath\":\"\\\\\\\\*\\\\NETLOGON\",\"securityFlags\":[\"requireMutualAuthentication\",\"requireIntegrity\"]}]}")
 package Jsonerator
 
 import (
