@@ -306,7 +306,6 @@ func GetKeyVals(data string) Tokens {
 		i++
 	}
 
-	fmt.Println(toks.Tokens)
 	//almost got it. Need to look at when tokens are populated
 	return toks
 }
