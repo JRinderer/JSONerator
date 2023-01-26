@@ -285,8 +285,28 @@ func GetKeyVals(data string) Tokens {
 
 	}
 
+	counter := 0
+	duplicate_frequency := make(map[string]int)
+	i := 0
+	sizer := len(toks.Tokens)
+
+	for a := 0; a < sizer; a++ {
+		_, exist := duplicate_frequency[toks.Tokens[a].Key]
+
+		if exist {
+			val := fmt.Sprintf("%d", counter)
+			toks.Tokens[a].Key += val
+
+			fmt.Println(toks.Tokens[a].Key)
+			duplicate_frequency[toks.Tokens[a].Key] += 1 // increase counter by 1 if already in the map
+			counter++
+		} else {
+			duplicate_frequency[toks.Tokens[a].Key] = 1 // else start counting from 1
+		}
+		i++
+	}
+
 	fmt.Println(toks.Tokens)
 	//almost got it. Need to look at when tokens are populated
-
 	return toks
 }
