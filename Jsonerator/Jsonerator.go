@@ -296,8 +296,6 @@ func GetKeyVals(data string) Tokens {
 		if exist {
 			val := fmt.Sprintf("%d", counter)
 			toks.Tokens[a].Key += val
-
-			fmt.Println(toks.Tokens[a].Key)
 			duplicate_frequency[toks.Tokens[a].Key] += 1 // increase counter by 1 if already in the map
 			counter++
 		} else {
